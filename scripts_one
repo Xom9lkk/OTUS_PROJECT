@@ -12,7 +12,7 @@ cp ./iptables /etc/sysconfig/iptables #копируем требуемые на�
 systemctl restart iptables #рестартуем службу
 systemctl enable iptables #добавляем в автозагрузку
 echo "Корректируем м сетевые настройки"
-cp ./enps03.nmconnection /etc/NetworkManager/system-connections #копируем настройки сервера
+cp ./enp0s3.nmconnection /etc/NetworkManager/system-connections #копируем настройки сервера
 systemctl restart NetworkManager #рестартуем сетевую службу
 echo "Выключение Selinux"
 sed -i 's/^SELINUX=.*/SELINUX=disabled/g' /etc/selinux/config  #изменяем положение селинукс
@@ -29,6 +29,7 @@ docker pull -q prom/prometheus #скачивание докер-образа п�
 docker pull -q grafana/grafana #скачивание докер-образа графаны
 docker pull -q prom/node-exporter #скачивание докер-образа node-exporter
 docker pull -q mysql/mysql-server:8.0 #скачивание докер-образа mysql-server
+unzip -q www.zip
 chmod 777 html1 html2 html0
 #Устанавливаем NGINX / APACHE
 dnf install -q -y nginx httpd
