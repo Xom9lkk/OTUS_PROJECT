@@ -22,11 +22,13 @@ echo "Устанавливаем Docker"
 sudo yum install -q -y yum-utils 
 sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo  #добавляем репозиторий для скачивания
 sudo yum install -q -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
 systemctl start docker #стартуем докер
 systemctl enable docker #добавляем в автозагрузку
 echo "Создаем каталог проекта для WordPress"
-mkdir /wordpress/nginx-conf
-cp ./nginx.conf /wordpress/nginx-conf
-docker-compose up -d
+mkdir /root/wordpress/nginx-conf
+cp ./nginx.conf /root/wordpress/nginx-conf
+docker compose up -d
 echo "Проверяем статус сервисов"
-docker-compose ps
+docker compose ps
