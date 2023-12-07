@@ -15,8 +15,6 @@ echo "Установка Docker и MySQL в качестве мастер реп
 docker run -d --name=master_mysql --hostname=master -v $PWD/d0:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=mypass -p 3306:3306 mysql/mysql-server:8.0 --server-id=1 --log-bin='mysql-bin-1.log' #создаем контейнер с мастером
 echo "Установка мониторинга через Docker"
 docker run -d --restart unless-stopped -p 9100:9100 --name=node_exporter prom/node-exporter #создаем контейнер с нод-экспортером
-docker run -d --restart unless-stopped -p 9090:9090 --name=prometheus -v ./prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus #создаем контейер с прометеусом
-docker run -d --restart unless-stopped -p 3000:3000 --name=grafana grafana/grafana #создаем контйенер с графаной
 #Донастройка докера
 docker exec -it master_mysql mysql -uroot -pmypass -e "CREATE USER 'repl'@'%' IDENTIFIED WITH mysql_native_password BY 'slavepass';" #создаем юзера
 docker exec -it master_mysql mysql -uroot -pmypass -e "GRANT REPLICATION SLAVE ON *.* TO 'repl'@'%';" #даем ему все привелегии для репликации
