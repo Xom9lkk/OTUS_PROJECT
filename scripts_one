@@ -3,14 +3,9 @@
 echo "Изменяем hostname VM"
 hostnamectl set-hostname wordpress #Hostname VM
 systemctl restart systemd-hostnamed #перезапускаем службу
-cp ./iptables /etc #копируем требуемые настройки IPTABLES
-echo "Корректируем сетевые настройки"
-cp ./01-network-manager-all.yaml /etc/netplan/01-network-manager-all.yaml #копируем настройки сервера
-netplan try #применяем сетевые настройки
 echo "Устанавливаем Apache"
 sudo apt install apache2 -y
 sudo systemctl enable apache2
-systemctl status apache2
 echo "Устанавливаем дополнительные расширения для PHP"
 sudo apt install -y php php-{common,mysql,xml,xmlrpc,curl,gd,imagick,cli,dev,imap,mbstring,opcache,soap,zip,intl} -y
 echo "Устанавливаем BD Mysql"
@@ -23,8 +18,8 @@ GRANT ALL PRIVILEGES ON wordpress.* TO 'kvdanilov'@'localhost';
 FLUSH PRIVILEGES;
 Exit;
 echo "Скачиваем Wordpress"
-wget https://wordpress.org/latest.zip -y
-sudo unzip latest.zip -y 
+wget https://wordpress.org/latest.zip
+sudo unzip latest.zip 
 sudo mv wordpress/ /var/www/html/
 sudo chown www-data:www-data -R /var/www/html/wordpress/
 sudo chmod -R 755 /var/www/html/wordpress/
@@ -33,18 +28,14 @@ sudo a2ensite wordpress.conf
 sudo a2enmod rewrite
 sudo a2dissite 000-default.conf
 sudo systemctl restart apache2
-
-
-
-
-#echo "Разрешаем master подключения"
-#cp ./mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
-#systemctl restart mysql
-#echo " Запускаем Mysql и меняем пароль от root" 
-#systemctl start mysql
-#sudo mysql
-#use mysql;
-#ALTER USER 'root'@'localhost' IDENTIFIED WITH 'caching_sha2_password' BY 'Testpass1$';
-#CREATE USER repl@'%' IDENTIFIED WITH 'caching_sha2_password' BY 'oTUSlave#2020'; 
-#GRANT REPLICATION SLAVE ON *.* TO repl@'%';
-#SHOW MASTER STATUS;
+echo "Разрешаем master подключения"
+cp ./mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
+systemctl restart mysql
+echo " Запускаем Mysql и меняем пароль от root" 
+systemctl start mysql
+sudo mysql
+use mysql;
+ALTER USER 'root'@'localhost' IDENTIFIED WITH 'caching_sha2_password' BY 'Testpass1$';
+CREATE USER repl@'%' IDENTIFIED WITH 'caching_sha2_password' BY 'oTUSlave#2020'; 
+GRANT REPLICATION SLAVE ON *.* TO repl@'%';
+SHOW MASTER STATUS;
