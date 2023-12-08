@@ -1,39 +1,52 @@
 #!/bin/bash
 
 echo "Изменяем hostname VM"
-hostnamectl set-hostname wordpress #название устройства
+hostnamectl set-hostname wordpress #Hostname VM
 systemctl restart systemd-hostnamed #перезапускаем службу
-echo "Отключаем Firewall"
-systemctl disable firewalld #удаляем из автозагрузки firewalld
-systemctl stop firewalld #выключаем firewalld
-echo "Устанавливаем другой Firewall"
-dnf install -q -y iptables-services #устанавливаем iptables 
-cp ./iptables /etc/sysconfig/iptables #копируем требуемые настройки
-systemctl restart iptables #рестартуем службу
+cp ./iptables /etc/sysconfig/iptables #копируем требуемые настройки IPTABLES
+systemctl restart iptables #перезапускаем службу
 systemctl enable iptables #добавляем в автозагрузку
-echo "Корректируем м сетевые настройки"
-cp ./enp0s3.nmconnection /etc/NetworkManager/system-connections #копируем настройки сервера
-systemctl restart NetworkManager #рестартуем сетевую службу
-echo "Выключение Selinux"
-sed -i 's/^SELINUX=.*/SELINUX=disabled/g' /etc/selinux/config  #изменяем положение селинукс
-setenforce 0 #выключаем селинукс
-#установка докера
-echo "Устанавливаем Docker"
-sudo yum install -q -y yum-utils 
-sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo  #добавляем репозиторий для скачивания
-sudo yum install -q -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-systemctl start docker #стартуем докер
-systemctl enable docker #добавляем в автозагрузку
-sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-echo "Создаем каталог проекта для WordPress"
-cd
-mkdir wordpress 
-cd wordpress
-mkdir nginx-conf
-cd /root/OTUS_PROJECT
-cp ./nginx.conf /root/wordpress/nginx-conf
-cp ./.env /root/wordpress
-docker compose up -d
-echo "Проверяем статус сервисов"
-docker compose ps
+echo "Корректируем сетевые настройки"
+cp ./01-network-manager-all.yaml /etc/netplan/01-network-manager-all.yaml #копируем настройки сервера
+netplan try #применяем сетевые настройки
+echo "Устанавливаем Apache"
+sudo apt install apache2 -y
+sudo systemctl enable apache2
+systemctl status apache2
+echo "Устанавливаем дополнительные расширения для PHP"
+sudo apt install -y php php-{common,mysql,xml,xmlrpc,curl,gd,imagick,cli,dev,imap,mbstring,opcache,soap,zip,intl} -y
+echo "Устанавливаем BD Mysql"
+apt install mysql-server-8.0 -y
+echo "Подключемся в Mysql и создаем пользователя и базу данных"
+sudo mysql
+CREATE DATABASE wordpress;
+CREATE USER 'kvdanilov'@'localhost' IDENTIFIED BY '3100369';
+GRANT ALL PRIVILEGES ON wordpress.* TO 'kvdanilov'@'localhost';
+FLUSH PRIVILEGES;
+Exit;
+echo "Скачиваем Wordpress"
+wget https://wordpress.org/latest.zip -y
+sudo unzip latest.zip -y 
+sudo mv wordpress/ /var/www/html/
+sudo chown www-data:www-data -R /var/www/html/wordpress/
+sudo chmod -R 755 /var/www/html/wordpress/
+cp ./wordpress.conf /etc/apache2/sites-available/
+sudo a2ensite wordpress.conf
+sudo a2enmod rewrite
+sudo a2dissite 000-default.conf
+sudo systemctl restart apache2
+
+
+
+
+#echo "Разрешаем master подключения"
+#cp ./mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
+#systemctl restart mysql
+#echo " Запускаем Mysql и меняем пароль от root" 
+#systemctl start mysql
+#sudo mysql
+#use mysql;
+#ALTER USER 'root'@'localhost' IDENTIFIED WITH 'caching_sha2_password' BY 'Testpass1$';
+#CREATE USER repl@'%' IDENTIFIED WITH 'caching_sha2_password' BY 'oTUSlave#2020'; 
+#GRANT REPLICATION SLAVE ON *.* TO repl@'%';
+#SHOW MASTER STATUS;
