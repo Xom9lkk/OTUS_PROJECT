@@ -3,9 +3,7 @@
 echo "Изменяем hostname VM"
 hostnamectl set-hostname wordpress #Hostname VM
 systemctl restart systemd-hostnamed #перезапускаем службу
-cp ./iptables /etc/sysconfig/iptables #копируем требуемые настройки IPTABLES
-systemctl restart iptables #перезапускаем службу
-systemctl enable iptables #добавляем в автозагрузку
+cp ./iptables /etc #копируем требуемые настройки IPTABLES
 echo "Корректируем сетевые настройки"
 cp ./01-network-manager-all.yaml /etc/netplan/01-network-manager-all.yaml #копируем настройки сервера
 netplan try #применяем сетевые настройки
