@@ -3,39 +3,25 @@
 echo "Изменяем hostname VM"
 hostnamectl set-hostname wordpress #Hostname VM
 systemctl restart systemd-hostnamed #перезапускаем службу
+echo "Устанавливаем статический IP адрес"
+nmcli connection show
+nmcli con add type ethernet con-name 'static-ip' ifname enp0s3 ipv4.method manual ipv4.addresses 192.168.0.105/24 gw4 192.168.0.1
+nmcli con mod static-ip ipv4.dns 8.8.8.8
+nmcli con up id 'static-ip'
+echo "Применяем правила IPTABLES"
+bash ./rules.v4
 echo "Устанавливаем Apache"
 sudo apt install apache2 -y
 sudo systemctl enable apache2
 echo "Устанавливаем дополнительные расширения для PHP"
 sudo apt install -y php php-{common,mysql,xml,xmlrpc,curl,gd,imagick,cli,dev,imap,mbstring,opcache,soap,zip,intl} -y
-echo "Устанавливаем BD Mysql"
+echo "Устанавливаем Базу данных Mysql"
 apt install mysql-server-8.0 -y
-echo "Подключемся в Mysql и создаем пользователя и базу данных"
-sudo mysql
-CREATE DATABASE wordpress;
-CREATE USER 'kvdanilov'@'localhost' IDENTIFIED BY '3100369';
-GRANT ALL PRIVILEGES ON wordpress.* TO 'kvdanilov'@'localhost';
-FLUSH PRIVILEGES;
-Exit;
-echo "Скачиваем Wordpress"
-wget https://wordpress.org/latest.zip
-sudo unzip latest.zip 
-sudo mv wordpress/ /var/www/html/
-sudo chown www-data:www-data -R /var/www/html/wordpress/
-sudo chmod -R 755 /var/www/html/wordpress/
-cp ./wordpress.conf /etc/apache2/sites-available/
-sudo a2ensite wordpress.conf
-sudo a2enmod rewrite
-sudo a2dissite 000-default.conf
-sudo systemctl restart apache2
-echo "Разрешаем master подключения"
 cp ./mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
 systemctl restart mysql
-echo " Запускаем Mysql и меняем пароль от root" 
 systemctl start mysql
+echo "Подключемся к Mysql и создаем пользователя для репликации"
 sudo mysql
-use mysql;
-ALTER USER 'root'@'localhost' IDENTIFIED WITH 'caching_sha2_password' BY 'Testpass1$';
-CREATE USER repl@'%' IDENTIFIED WITH 'caching_sha2_password' BY 'oTUSlave#2020'; 
-GRANT REPLICATION SLAVE ON *.* TO repl@'%';
-SHOW MASTER STATUS;
+bash ./mysql-master
+echo "Скрипт подготовки репликации на master завершен"
+

@@ -1,0 +1,9 @@
+#!/bin/bash
+mysql -uroot -p'Testpass1$' <<MYSQL_SCRIPT
+USE MYSQl;
+CREATE DATABASE wordpress;
+CREATE USER 'kvdanilov'@'localhost' IDENTIFIED BY '3100369';
+GRANT ALL PRIVILEGES ON wordpress.* TO 'kvdanilov'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+MYSQL_SCRIPT

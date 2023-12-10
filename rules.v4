@@ -1,0 +1,31 @@
+#!/bin/bash
+echo "Применяем правила IPTABLES"
+cat /etc/iptables/rules.v4
+iptables -A INPUT -i lo -j ACCEPT 
+iptables -A OUTPUT -o lo -j ACCEPT
+iptables -A INPUT -p icmp -j ACCEPT
+iptables -A OUTPUT -p icmp -j ACCEPT
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 9100 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 8080 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 8081 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 8082 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 9600 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 9200 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 9300 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 5601 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 5400 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 5000 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 33060 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 33061 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 3306 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 8000 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 8005 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 8085 -j ACCEPT
+netfilter-persistent save
+netfilter-persistent start
+cat /etc/iptables/rules.v4
+iptables -L

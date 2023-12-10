@@ -1,0 +1,16 @@
+#!/bin/bash
+echo "Подключемся к Mysql и создаем пользователя и базу данных для Wordpress"
+sudo mysql
+bash ./mysql-wp
+echo "Скачиваем Wordpress"
+wget https://wordpress.org/latest.zip
+sudo unzip latest.zip 
+sudo mv wordpress/ /var/www/html/
+sudo chown www-data:www-data -R /var/www/html/wordpress/
+sudo chmod -R 755 /var/www/html/wordpress/
+cp ./wordpress.conf /etc/apache2/sites-available/
+sudo a2ensite wordpress.conf
+sudo a2enmod rewrite
+sudo a2dissite 000-default.conf
+sudo systemctl restart apache2
+echo "ПОДГОТОВКА WORDPRESS ОКОНЧЕНА"
