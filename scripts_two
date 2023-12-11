@@ -1,6 +1,5 @@
 #!/bin/bash
 echo "Подключемся к Mysql и создаем пользователя и базу данных для Wordpress"
-sudo mysql
 bash ./mysql-wp
 echo "Скачиваем Wordpress"
 wget https://wordpress.org/latest.zip
