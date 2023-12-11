@@ -1,5 +1,5 @@
 #!/bin/bash
-mysql -uroot -p'Testpass1$' <<MYSQL_SCRIPT
+mysql -uroot <<MYSQL_SCRIPT
 use mysql;
 CREATE DATABASE wordpress;
 CREATE USER 'kvdanilov'@'localhost' IDENTIFIED BY '3100369';
