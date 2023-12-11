@@ -15,3 +15,5 @@ systemctl restart filebeat.service
 sudo filebeat modules enable apache
 cp ./apache.yml /etc/filebeat/modules.d/apache.
 systemctl restart filebeat.service
+sudo filebeat setup
+sudo service filebeat start
