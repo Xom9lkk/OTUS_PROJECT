@@ -10,3 +10,6 @@ sudo systemctl start node_exporter
 sudo systemctl enable node_exporter
 echo "Устанавливаем Filebeat"
 sudo dpkg -i filebeat-8.9.1-amd64.deb
+cp ./filebeat.yml /etc/filebeat/filebeat.yml
+systemctl restart filebeat.service
+sudo filebeat modules enable apache
