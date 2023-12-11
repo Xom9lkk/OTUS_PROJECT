@@ -5,7 +5,7 @@ hostnamectl set-hostname wordpress #Hostname VM
 systemctl restart systemd-hostnamed #перезапускаем службу
 echo "Устанавливаем статический IP адрес"
 nmcli connection show
-nmcli con add type ethernet con-name 'static-ip' ifname enp0s3 ipv4.method manual ipv4.addresses 192.168.0.105/24 gw4 192.168.0.1
+nmcli con add type ethernet con-name 'static-ip' ifname enp0s3 ipv4.method manual ipv4.addresses 192.168.0.108/24 gw4 192.168.0.1
 nmcli con mod static-ip ipv4.dns 8.8.8.8
 nmcli con up id 'static-ip'
 echo "Применяем правила IPTABLES"
