@@ -21,7 +21,6 @@ cp ./mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
 systemctl restart mysql
 systemctl start mysql
 echo "Подключемся к Mysql и создаем пользователя для репликации"
-sudo mysql
 bash ./mysql-master
 echo "Скрипт подготовки репликации на master завершен"
 
