@@ -13,3 +13,5 @@ sudo dpkg -i filebeat-8.9.1-amd64.deb
 cp ./filebeat.yml /etc/filebeat/filebeat.yml
 systemctl restart filebeat.service
 sudo filebeat modules enable apache
+cp ./apache.yml /etc/filebeat/modules.d/apache.
+systemctl restart filebeat.service
